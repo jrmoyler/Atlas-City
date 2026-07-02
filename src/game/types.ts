@@ -47,6 +47,12 @@ export interface BuildingDef {
 /** A single cell of the city grid. */
 export interface Tile {
   building: BuildingId;
+  /**
+   * Whether this building is road-connected and therefore economically
+   * active. Recomputed each simulation day; roads/parks/grass are always
+   * active, zones require adjacency to the road network.
+   */
+  active: boolean;
 }
 
 /** Snapshot of city-wide simulation figures shown in the HUD. */
@@ -58,4 +64,11 @@ export interface CityStats {
   /** Net credits per simulation day (income − upkeep). */
   balance: number;
   day: number;
+  /** Employed residents (min of population and connected jobs). */
+  employed: number;
+  /** Count of placed zones that are not road-connected (idle). */
+  disconnected: number;
 }
+
+/** Lifecycle of a play session — drives win/lose UI. */
+export type GamePhase = "playing" | "bankrupt";

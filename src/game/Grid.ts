@@ -1,5 +1,18 @@
 import type { BuildingId, Tile, TileCoord } from "./types";
 
+/** Single-char save codes, stable across versions (append-only). */
+const BUILDING_CODE: Record<BuildingId, string> = {
+  grass: ".",
+  road: "r",
+  residential: "h",
+  commercial: "c",
+  industrial: "i",
+  park: "p",
+};
+const CODE_BUILDING: Record<string, BuildingId> = Object.fromEntries(
+  Object.entries(BUILDING_CODE).map(([k, v]) => [v, k as BuildingId]),
+) as Record<string, BuildingId>;
+
 /**
  * The city map: a dense row-major array of tiles. Fixed size, allocated once,
  * so the simulation/render hot loops never allocate (a skill MUST DO).
@@ -14,8 +27,38 @@ export class Grid {
     this.rows = rows;
     this.tiles = new Array(cols * rows);
     for (let i = 0; i < this.tiles.length; i++) {
-      this.tiles[i] = { building: "grass" };
+      this.tiles[i] = { building: "grass", active: true };
     }
+  }
+
+  /** Reset every tile back to bare grass (allocation-free — mutates in place). */
+  clear(): void {
+    for (let i = 0; i < this.tiles.length; i++) {
+      this.tiles[i].building = "grass";
+      this.tiles[i].active = true;
+    }
+  }
+
+  /**
+   * Serialize buildings to a compact row-major string (one char per tile) for
+   * localStorage. Only the building matters; `active` is derived on load.
+   */
+  serialize(): string {
+    let out = "";
+    for (let i = 0; i < this.tiles.length; i++) {
+      out += BUILDING_CODE[this.tiles[i].building];
+    }
+    return out;
+  }
+
+  /** Restore from a {@link serialize} string. Returns false if it doesn't fit. */
+  deserialize(data: string): boolean {
+    if (data.length !== this.tiles.length) return false;
+    for (let i = 0; i < this.tiles.length; i++) {
+      this.tiles[i].building = CODE_BUILDING[data[i]] ?? "grass";
+      this.tiles[i].active = true;
+    }
+    return true;
   }
 
   inBounds(x: number, y: number): boolean {

@@ -4,9 +4,24 @@ An isometric **city-builder** game for the web, written in TypeScript with a
 zero-asset Canvas renderer. Place zones, watch population and the economy
 respond in real time, and grow a city.
 
-> **Status: early scaffold.** This is a clean, running foundation — a real
-> playable core (place/bulldoze, live economy simulation, pan/zoom/HUD), not a
-> finished game. See [`ROADMAP.md`](./ROADMAP.md) for what's next.
+> **Status: playable.** A running core with a real game loop — place/bulldoze,
+> road-connected economy, population milestones, a bankruptcy lose state,
+> autosave, and placement feedback. Not "finished," but a genuine game you can
+> sit down and play. See [`ROADMAP.md`](./ROADMAP.md) for what's next.
+
+## What's in the game
+
+- **Zoning that matters** — housing, shops, and industry only earn income when
+  connected to the **road network**; disconnected zones grey out with a "no
+  road" warning and contribute nothing until you link them.
+- **Living economy** — population migrates toward connected housing, gated by
+  available jobs; employed residents drive productivity and tax income.
+- **Goals & failure** — population **milestones** (Village → Metropolis) are
+  announced as you hit them; run the treasury below zero and you go **bankrupt**.
+- **Save/load** — the city autosaves to `localStorage` every few days (and on
+  exit); **New City** starts fresh.
+- **Feel** — translucent placement preview (valid/invalid), a day↔night sky
+  cycle, and toast notifications for milestones and warnings.
 
 ## Quick start
 
@@ -32,6 +47,10 @@ npm run typecheck  # types only
 | Bulldoze | Select **Bulldoze** (`0`), then click |
 | Pan | Right/middle-drag, or left-drag past a few px |
 | Zoom | Mouse wheel, or two-finger pinch (touch) |
+| Save / New City | Buttons, top-right |
+
+**Tip:** lay a **Road** first, then place housing/shops/industry *next to it* —
+a zone with no adjacent road stays idle (greyed, amber dot) and earns nothing.
 
 ## How it's built
 
@@ -50,12 +69,14 @@ src/
     config/
       buildings.ts        Data-driven building/balance table (edit here)
       world.ts            Map size, tile size, economy constants
+      milestones.ts       Population goals announced during play
     systems/
-      Simulation.ts       Economy: population, jobs, income, upkeep
-      Renderer.ts         Placeholder isometric Canvas renderer
+      Simulation.ts       Economy: connectivity, population, jobs, income
+      Renderer.ts         Isometric Canvas renderer + preview / day-night
       Input.ts            Pointer/keyboard: place, pan, zoom, pinch
+      Persistence.ts      localStorage save/load (compact grid encoding)
   ui/
-    Hud.ts                DOM overlay: stat bar + build toolbar
+    Hud.ts                DOM overlay: stats, toolbar, menu, toast stack
 ```
 
 ### Design notes

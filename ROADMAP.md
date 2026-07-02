@@ -15,20 +15,25 @@ achievable goal.
 - Fixed-timestep economy: population, jobs, housing, income, upkeep, treasury.
 - Live HUD; verified running end-to-end in a headless browser.
 
-## Phase 1 — A real game loop
+## Phase 1 — A real game loop  *(mostly done)*
 
-- **Demand model**: separate residential/commercial/industrial demand so zoning
-  choices matter; unemployment and vacancy feedback.
-- **Roads & connectivity**: buildings only function when road-connected; simple
-  pathfinding/flood-fill for service coverage.
+- ✅ **Roads & connectivity**: zones only earn when road-adjacent; disconnected
+  zones grey out with a warning. (Next: full flood-fill service *coverage* radius
+  rather than direct adjacency.)
+- ✅ **Win/lose & goals**: population milestones (Village → Metropolis) and a
+  bankruptcy loss state that resets the city.
+- ✅ **Save/load**: grid + treasury serialized to `localStorage`, with autosave.
+- **Demand model**: separate residential/commercial/industrial demand so the mix
+  of zones matters; explicit unemployment/vacancy feedback. *(partial — jobs
+  gate population; per-zone demand still TODO.)*
 - **Services**: power, water, and their networks as a build constraint.
-- **Win/lose & goals**: milestones (population tiers), bankruptcy loss state.
-- **Save/load**: serialize the grid + stats to `localStorage`.
 
-## Phase 2 — Feel & polish
+## Phase 2 — Feel & polish  *(started)*
 
-- Placement preview (ghost tile, affordability/validity highlight).
-- Sound + music (Web Audio); day/night tint cycle.
+- ✅ Placement preview (ghost tile, valid/invalid highlight); unaffordable tools
+  disabled in the toolbar.
+- ✅ Day/night sky tint cycle; toast notifications for milestones & warnings.
+- Sound + music (Web Audio).
 - Particle/tween juice on build & income; number roll-ups in the HUD.
 - Better placeholder art → sprite atlas, or migrate the renderer to Three.js /
   WebGL for real 3D depth and lighting.
